@@ -110,9 +110,4 @@ dmypy.json
 .pyre/
 
 # Project specific
-results/
-model_weights.pth
-*.csv
-*.pkl
-*.h5
 wandb/
