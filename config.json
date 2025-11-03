@@ -24,7 +24,7 @@
     }
   },
   "training": {
-    "n_epochs": 5,
+    "n_epochs": 2500,
     "learning_rate": 0.0005,
     "loss_weights": {
       "physics": 10.0,
