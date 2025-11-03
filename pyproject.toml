@@ -1,0 +1,13 @@
+[project]
+name = "pinn-cancer-invasion"
+version = "1.0.0"
+description = "Physics-Informed Neural Networks for Collective Cancer Invasion Modeling"
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = [
+    "matplotlib>=3.10.3",
+    "neuraloperator>=1.0.2",
+    "numpy>=2.3.2",
+    "torch>=2.7.1",
+    "pillow>=10.0.0",
+]

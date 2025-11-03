@@ -1,0 +1,48 @@
+{
+  "data": {
+    "batch_size": 16,
+    "n_spatial_points": 64,
+    "n_time_steps": 64,
+    "collocation_count": 10000,
+    "ic_count": 10000,
+    "bc_count": 10000
+  },
+  "model": {
+    "type": "FNO",
+    "coord_encoder": {
+      "hidden_dim": 128,
+      "num_layers": 4
+    },
+    "manifold_net": {
+      "hidden_dim": 256,
+      "num_layers": 5
+    },
+    "fno": {
+      "modes": 16,
+      "width": 64,
+      "n_layers": 4
+    }
+  },
+  "training": {
+    "n_epochs": 2500,
+    "learning_rate": 0.0005,
+    "loss_weights": {
+      "physics": 10.0,
+      "ic": 7.0,
+      "bc_left": 2.0,
+      "bc_right": 1.0
+    }
+  },
+  "constants": {
+    "D_l": 0.01,
+    "D_f": 0.01,
+    "a_lf": 1.0,
+    "K_l": 1.0,
+    "K_f": 1.0,
+    "X": 0.2
+  },
+  "output": {
+    "model_path": "model_weights.pth",
+    "output_dir": "results"
+  }
+}
