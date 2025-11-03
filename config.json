@@ -43,6 +43,7 @@
   },
   "output": {
     "model_path": "model_weights.pth",
-    "output_dir": "results"
+    "output_dir": "results",
+    "plot_dir": "plots"
   }
 }

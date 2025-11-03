@@ -103,8 +103,16 @@ class Visualizer:
         plt.tight_layout(rect=[0, 0.03, 1, 0.95])
         
         # Save the plot to file
-        os.makedirs('plots', exist_ok=True)
-        plot_path = os.path.join('plots', 'density_snapshot.png')
+        # Load config to get plot directory
+        config_path = os.path.join(os.path.dirname(os.path.dirname(__file__)), 'config.json')
+        with open(config_path, 'r') as f:
+            config = json.load(f)
+        
+        output_config = config.get('output', {})
+        plot_dir = output_config.get('plot_dir', 'plots')
+        
+        os.makedirs(plot_dir, exist_ok=True)
+        plot_path = os.path.join(plot_dir, 'density_snapshot.png')
         plt.savefig(plot_path, dpi=300, bbox_inches='tight')
         self.logger.info(f"Density snapshot saved to {plot_path}")
         

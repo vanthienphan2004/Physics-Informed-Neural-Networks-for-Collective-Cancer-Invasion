@@ -138,8 +138,16 @@ def plot_from_saved_data(results):
     plt.tight_layout(rect=[0, 0.03, 1, 0.95])
 
     # Save plot
-    os.makedirs('plots', exist_ok=True)
-    plot_path = os.path.join('plots', 'results_analysis.png')
+    # Load config to get plot directory
+    config_path = os.path.join(os.path.dirname(os.path.dirname(__file__)), 'config.json')
+    with open(config_path, 'r') as f:
+        config = json.load(f)
+    
+    output_config = config.get('output', {})
+    plot_dir = output_config.get('plot_dir', 'plots')
+    
+    os.makedirs(plot_dir, exist_ok=True)
+    plot_path = os.path.join(plot_dir, 'results_analysis.png')
     plt.savefig(plot_path, dpi=300, bbox_inches='tight')
     print(f"Analysis plot saved to {plot_path}")
     plt.show()
