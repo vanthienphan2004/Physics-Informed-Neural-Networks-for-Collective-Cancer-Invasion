@@ -188,13 +188,7 @@ class CoupledSpeciesTFNO(nn.Module):
             hidden_channels=width,
             in_channels=self.in_channels,
             out_channels=self.out_channels,
-            n_layers=n_layers,
-            use_mlp=True,
-            mlp_dropout=0.05,
-            mlp_expansion=0.5,
-            factorization='tucker',
-            rank=0.5,
-            non_linearity=F.relu
+            n_layers=n_layers
         )
 
     def forward(self, x: torch.Tensor) -> torch.Tensor:

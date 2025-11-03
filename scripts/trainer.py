@@ -144,37 +144,45 @@ class Trainer_FNO:
         D_l, D_f, a_lf, K_l, K_f, X = self.constants.values()
 
         # Compute derivatives using automatic differentiation
-        dp_l_dt = torch.autograd.grad(
-            p_l, grid_t,
-            grad_outputs=torch.ones_like(p_l),
-            create_graph=True
-        )[0]
-        dp_l_dx = torch.autograd.grad(
-            p_l, grid_x,
-            grad_outputs=torch.ones_like(p_l),
-            create_graph=True
-        )[0]
-        d2p_l_dx2 = torch.autograd.grad(
-            dp_l_dx, grid_x,
-            grad_outputs=torch.ones_like(dp_l_dx),
-            create_graph=True
-        )[0]
+        # Note: We need to create a computation graph by treating the output as a function of the inputs
+        # For FNO, we need to ensure the model output depends on the coordinate inputs
 
-        dp_f_dt = torch.autograd.grad(
-            p_f, grid_t,
-            grad_outputs=torch.ones_like(p_f),
-            create_graph=True
-        )[0]
-        dp_f_dx = torch.autograd.grad(
-            p_f, grid_x,
-            grad_outputs=torch.ones_like(p_f),
-            create_graph=True
-        )[0]
-        d2p_f_dx2 = torch.autograd.grad(
-            dp_f_dx, grid_x,
-            grad_outputs=torch.ones_like(dp_f_dx),
-            create_graph=True
-        )[0]
+        # Create coordinate tensors that require gradients for differentiation
+        x_coords = grid_x.detach().requires_grad_(True)
+        t_coords = grid_t.detach().requires_grad_(True)
+
+        # Re-run forward pass with gradient-enabled coordinates to establish computation graph
+        # This is a simplified approach - in practice, the model should be designed to take coordinates as inputs
+        batch_size, n_x, n_t = grid_x.shape
+
+        # For PINN-style physics loss, we need spatial-temporal derivatives
+        # Let's compute them using finite differences as a simpler approach first
+        # Spatial derivatives (central difference)
+        dp_l_dx = torch.zeros_like(p_l)
+        dp_l_dx[:, 1:-1, :] = (p_l[:, 2:, :] - p_l[:, :-2, :]) / (2 * (grid_x[:, 2, :] - grid_x[:, 0, :]).unsqueeze(1))
+        # Boundary conditions for derivatives
+        dp_l_dx[:, 0, :] = (p_l[:, 1, :] - p_l[:, 0, :]) / (grid_x[:, 1, :] - grid_x[:, 0, :])
+        dp_l_dx[:, -1, :] = (p_l[:, -1, :] - p_l[:, -2, :]) / (grid_x[:, -1, :] - grid_x[:, -2, :])
+
+        d2p_l_dx2 = torch.zeros_like(p_l)
+        d2p_l_dx2[:, 1:-1, :] = (p_l[:, 2:, :] - 2 * p_l[:, 1:-1, :] + p_l[:, :-2, :]) / ((grid_x[:, 2, :] - grid_x[:, 0, :]).unsqueeze(1) ** 2)
+
+        dp_f_dx = torch.zeros_like(p_f)
+        dp_f_dx[:, 1:-1, :] = (p_f[:, 2:, :] - p_f[:, :-2, :]) / (2 * (grid_x[:, 2, :] - grid_x[:, 0, :]).unsqueeze(1))
+        dp_f_dx[:, 0, :] = (p_f[:, 1, :] - p_f[:, 0, :]) / (grid_x[:, 1, :] - grid_x[:, 0, :])
+        dp_f_dx[:, -1, :] = (p_f[:, -1, :] - p_f[:, -2, :]) / (grid_x[:, -1, :] - grid_x[:, -2, :])
+
+        d2p_f_dx2 = torch.zeros_like(p_f)
+        d2p_f_dx2[:, 1:-1, :] = (p_f[:, 2:, :] - 2 * p_f[:, 1:-1, :] + p_f[:, :-2, :]) / ((grid_x[:, 2, :] - grid_x[:, 0, :]).unsqueeze(1) ** 2)
+
+        # Time derivatives (forward difference for simplicity)
+        dp_l_dt = torch.zeros_like(p_l)
+        dp_l_dt[:, :, :-1] = (p_l[:, :, 1:] - p_l[:, :, :-1]) / (grid_t[:, :, 1:] - grid_t[:, :, :-1])
+        dp_l_dt[:, :, -1] = dp_l_dt[:, :, -2]  # Extend last value
+
+        dp_f_dt = torch.zeros_like(p_f)
+        dp_f_dt[:, :, :-1] = (p_f[:, :, 1:] - p_f[:, :, :-1]) / (grid_t[:, :, 1:] - grid_t[:, :, :-1])
+        dp_f_dt[:, :, -1] = dp_f_dt[:, :, -2]  # Extend last value
 
         # PDE residuals for leader species
         residual_rho_l = (
@@ -250,21 +258,12 @@ class Trainer_FNO:
 
         D_l, D_f, a_lf, K_l, K_f, X = self.constants.values()
 
-        # Compute spatial derivatives at left boundary (x=0)
-        dp_l_dx = torch.autograd.grad(
-            p_l, grid_x,
-            grad_outputs=torch.ones_like(p_l),
-            create_graph=True
-        )[0]
-        dp_f_dx = torch.autograd.grad(
-            p_f, grid_x,
-            grad_outputs=torch.ones_like(p_f),
-            create_graph=True
-        )[0]
+        # Compute spatial derivatives at left boundary using finite differences
+        # Left boundary derivatives (forward difference)
+        dp_l_dx_at_x0 = (p_l[:, 1, :] - p_l[:, 0, :]) / (grid_x[:, 1, :] - grid_x[:, 0, :])
+        dp_f_dx_at_x0 = (p_f[:, 1, :] - p_f[:, 0, :]) / (grid_x[:, 1, :] - grid_x[:, 0, :])
 
         # Values at left boundary
-        dp_l_dx_at_x0 = dp_l_dx[:, 0, :]
-        dp_f_dx_at_x0 = dp_f_dx[:, 0, :]
         p_l_at_x0 = p_l[:, 0, :]
         p_f_at_x0 = p_f[:, 0, :]
 

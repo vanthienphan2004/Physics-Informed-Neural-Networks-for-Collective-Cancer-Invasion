@@ -198,6 +198,11 @@ class SimulationController:
             model_path = output_config.get('model_path', 'model_weights.pth')
             output_dir = output_config.get('output_dir', 'results')
 
+            # Make output_dir absolute relative to project root (where config.json is)
+            if not os.path.isabs(output_dir):
+                config_dir = os.path.dirname(os.path.abspath(__file__))
+                output_dir = os.path.join(config_dir, output_dir)
+
             # Ensure the model path includes the output directory if it's just a filename
             if os.path.dirname(model_path) == '':
                 model_path = os.path.join(output_dir, model_path)

@@ -111,6 +111,10 @@ class Visualizer:
         output_config = config.get('output', {})
         plot_dir = output_config.get('plot_dir', 'plots')
         
+        # Make plot_dir absolute relative to config file location
+        if not os.path.isabs(plot_dir):
+            plot_dir = os.path.join(os.path.dirname(config_path), plot_dir)
+        
         os.makedirs(plot_dir, exist_ok=True)
         plot_path = os.path.join(plot_dir, 'density_snapshot.png')
         plt.savefig(plot_path, dpi=300, bbox_inches='tight')
@@ -130,6 +134,10 @@ class Visualizer:
         
         output_config = config.get('output', {})
         results_dir = output_config.get('output_dir', 'results')
+        
+        # Make results_dir absolute relative to config file location
+        if not os.path.isabs(results_dir):
+            results_dir = os.path.join(os.path.dirname(config_path), results_dir)
         
         os.makedirs(results_dir, exist_ok=True)
         
