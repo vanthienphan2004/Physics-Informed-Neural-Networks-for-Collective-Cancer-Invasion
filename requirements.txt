@@ -1,6 +1,34 @@
-torch>=2.7.1
+# PyTorch with CUDA support (install from PyTorch's CUDA wheels)
+# For CUDA 12.8 support: pip install --index-url https://download.pytorch.org/whl/cu128 torch==2.9.0+cu128 torchvision==0.24.0+cu128 torchaudio==2.9.0+cu128
+# For CPU-only: pip install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cpu
+torch>=2.9.0
+torchvision>=0.24.0
+torchaudio>=2.9.0
+
+# Neural operator library for FNO models
+neuraloperator>=2.0.0
+
+# Scientific computing and data processing
 numpy>=2.3.2
-matplotlib>=3.10.3
-neuraloperator>=1.0.2
+scipy>=1.16.0
 pandas>=2.0.0
+
+# Visualization
+matplotlib>=3.10.3
 pillow>=10.0.0
+
+# Additional dependencies for neuraloperator
+tensorly>=0.9.0
+tensorly-torch>=0.5.0
+opt-einsum>=3.4.0
+h5py>=3.15.0
+
+# Configuration and utilities
+PyYAML>=6.0.0
+ruamel.yaml>=0.18.0
+pydantic>=2.12.0
+zencfg>=0.6.0
+configmypy>=0.2.0
+
+# Optional: Weights & Biases for experiment tracking
+wandb>=0.22.0

@@ -1,7 +1,7 @@
 # Physics-Informed Neural Networks for Collective Cancer Invasion
 
 [![Python Version](https://img.shields.io/badge/python-3.12+-blue.svg)](https://www.python.org/downloads/)
-[![PyTorch](https://img.shields.io/badge/PyTorch-2.7+-red.svg)](https://pytorch.org/)
+[![PyTorch](https://img.shields.io/badge/PyTorch-2.9+-red.svg)](https://pytorch.org/)
 [![License](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
 
 A comprehensive implementation of physics-informed neural networks (PINNs) and Fourier neural operators (FNOs) for modeling collective cancer invasion dynamics. This project solves coupled nonlinear partial differential equations describing the spatiotemporal evolution of leader and follower cancer cell populations using advanced machine learning techniques.
@@ -56,7 +56,8 @@ The model describes the spatiotemporal evolution of leader ($\rho_l$) and follow
 
 ### Prerequisites
 - Python 3.12 or higher
-- PyTorch 2.7+ with CUDA support (recommended)
+- PyTorch 2.9+ with CUDA support (recommended for GPU acceleration)
+- NVIDIA GPU with CUDA 12.8+ (optional but recommended)
 
 ### Setup
 ```bash
@@ -68,7 +69,18 @@ cd pinn-cancer-invasion
 python -m venv venv
 source venv/bin/activate  # On Windows: venv\Scripts\activate
 
-# Install dependencies
+# Install CUDA-enabled PyTorch (recommended)
+pip install -r requirements-cuda.txt
+
+# Install remaining dependencies
+pip install -r requirements.txt
+```
+
+### Alternative Installation (CPU-only)
+If you don't have a CUDA-compatible GPU:
+```bash
+# Install CPU-only PyTorch
+pip install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cpu
 pip install -r requirements.txt
 ```
 
