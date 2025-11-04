@@ -111,3 +111,7 @@ dmypy.json
 
 # Project specific
 wandb/
+
+# Generated results and plots
+results/
+plots/

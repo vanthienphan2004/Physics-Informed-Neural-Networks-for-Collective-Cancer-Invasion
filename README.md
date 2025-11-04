@@ -26,7 +26,6 @@ This application models the complex dynamics of cancer cell invasion through a c
 - [Usage](#-usage)
 - [Project Structure](#-project-structure)
 - [Configuration](#-configuration)
-- [Results Analysis](#-results-analysis)
 - [Architecture](#-architecture)
 - [Contributing](#-contributing)
 - [License](#-license)
@@ -62,17 +61,14 @@ The model describes the spatiotemporal evolution of leader ($\rho_l$) and follow
 ### Setup
 ```bash
 # Clone the repository
-git clone https://github.com/yourusername/pinn-cancer-invasion.git
+git clone https://github.com/vanthienphan2004/pinn-cancer-invasion.git
 cd pinn-cancer-invasion
 
 # Create virtual environment
 python -m venv venv
 source venv/bin/activate  # On Windows: venv\Scripts\activate
 
-# Install CUDA-enabled PyTorch (recommended)
-pip install -r requirements-cuda.txt
-
-# Install remaining dependencies
+# Install dependencies (includes PyTorch with CUDA support instructions)
 pip install -r requirements.txt
 ```
 
@@ -138,8 +134,7 @@ pinn-cancer-invasion/
 │   ├── trainer.py             # Training logic and PDE computations
 │   ├── data_loader.py         # Synthetic data generation
 │   ├── visualization.py       # Plotting and result saving
-│   ├── utils.py               # Device detection utilities
-│   └── analyze_results.py     # Post-processing analysis
+│   └── utils.py               # Device detection utilities
 ├── results/                   # Generated results (auto-created)
 └── plots/                     # Generated visualizations (auto-created)
 ```
@@ -191,36 +186,6 @@ The `config.json` file controls all aspects of the simulation:
   }
 }
 ```
-
-## 📊 Results Analysis
-
-### Post-Processing Analysis
-```bash
-# Analyze saved results without retraining
-python scripts/analyze_results.py
-```
-
-### Results Formats
-
-**NumPy Arrays** (`predictions.npz`):
-- Compressed binary format for numerical analysis
-- Contains full spatiotemporal density fields
-- Fast loading for further processing
-
-**CSV Data** (`predictions.csv`):
-- Human-readable tabular format
-- Compatible with spreadsheet applications
-- Includes spatial coordinates and time stamps
-
-**JSON Summary** (`results_summary.json`):
-- Statistical overview of simulation results
-- Min/max/mean values for both species
-- Metadata for reproducibility
-
-**Visualizations** (`plots/`):
-- High-resolution PNG snapshots
-- Time-annotated density profiles
-- Publication-ready figures
 
 ## 🏗️ Architecture
 
