@@ -231,14 +231,12 @@ class SimulationController:
                 self.trained_model,
                 self.input_tensor,
                 self.grid_x,
-                self.grid_t
+                self.grid_t,
+                loss_history=self.trainer.loss_history if self.trainer else None
             )
 
-            # Generate plots
-            self.visualizer.plot_density_snapshot()
-            
-            # Save results in multiple formats
-            self.visualizer.save_results()
+            # Generate all visualizations
+            self.visualizer.visualize_all()
 
             self.logger.info("Visualizations and results saved successfully")
 

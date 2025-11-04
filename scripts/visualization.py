@@ -2,17 +2,17 @@ import torch
 import matplotlib.pyplot as plt
 import logging
 import numpy as np
-from typing import Optional
+from typing import Optional, Dict, List
 import os
 import json
 
 
 class Visualizer:
     """
-    Visualization class for cancer invasion simulation results.
+    Comprehensive visualization class for cancer invasion simulation results.
 
-    Provides methods to create density snapshots of the density
-    evolution predicted by the physics-informed neural network.
+    Provides methods to create density snapshots, training loss curves, and save
+    results in multiple formats for the physics-informed neural network simulation.
     """
 
     def __init__(
@@ -20,7 +20,8 @@ class Visualizer:
         model: torch.nn.Module,
         input_tensor: torch.Tensor,
         grid_x: torch.Tensor,
-        grid_t: torch.Tensor
+        grid_t: torch.Tensor,
+        loss_history: Optional[Dict[str, List[float]]] = None
     ) -> None:
         """
         Initialize the visualizer.
@@ -35,10 +36,13 @@ class Visualizer:
             Spatial grid coordinates
         grid_t : torch.Tensor
             Temporal grid coordinates
+        loss_history : Dict[str, List[float]], optional
+            Training loss history for loss visualization
         """
         self.model = model
         self.device = next(model.parameters()).device
         self.input_tensor = input_tensor.to(self.device)
+        self.loss_history = loss_history
 
         # Store grid coordinates as numpy arrays for plotting
         self.grid_x = grid_x.cpu().detach().numpy()
@@ -193,4 +197,119 @@ class Visualizer:
             json.dump(summary, f, indent=2)
         
         self.logger.info(f"Results saved to {results_dir}/ in multiple formats")
+
+    def plot_loss_comparison(
+        self,
+        save_path: Optional[str] = None,
+        show_plot: bool = True
+    ) -> None:
+        """
+        Plot all loss components on the same graph for comparison.
+
+        Parameters
+        ----------
+        save_path : str, optional
+            Path to save the plot, if None, plot is not saved
+        show_plot : bool, optional
+            Whether to display the plot, default is True
+        """
+        if self.loss_history is None:
+            self.logger.warning("No loss history available for visualization")
+            return
+
+        epochs = range(1, len(self.loss_history['total']) + 1)
+
+        plt.figure(figsize=(12, 8))
+
+        # Plot all losses
+        plt.plot(epochs, self.loss_history['total'], 'k-', linewidth=3, label='Total Loss', alpha=0.8)
+        plt.plot(epochs, self.loss_history['physics'], 'b-', linewidth=2, label='PDE Physics Loss', alpha=0.8)
+        plt.plot(epochs, self.loss_history['ic'], 'r-', linewidth=2, label='Initial Condition Loss', alpha=0.8)
+        plt.plot(epochs, self.loss_history['bc_left'], 'g-', linewidth=2, label='Left BC Loss', alpha=0.8)
+        plt.plot(epochs, self.loss_history['bc_right'], 'm-', linewidth=2, label='Right BC Loss', alpha=0.8)
+
+        plt.title('Training Loss Comparison - PINN Cancer Invasion', fontsize=16, fontweight='bold')
+        plt.xlabel('Epoch', fontsize=12)
+        plt.ylabel('Loss', fontsize=12)
+        plt.yscale('log')
+        plt.grid(True, alpha=0.3)
+        plt.legend(fontsize=10)
+        plt.tight_layout()
+
+        # Save plot if path provided
+        if save_path:
+            plt.savefig(save_path, dpi=300, bbox_inches='tight')
+            self.logger.info(f"Loss comparison plot saved to: {save_path}")
+
+        # Show plot if requested
+        if show_plot:
+            plt.show()
+        else:
+            plt.close()
+
+    def save_loss_data(self, save_path: str) -> None:
+        """
+        Save loss history data to a CSV file.
+
+        Parameters
+        ----------
+        save_path : str
+            Path to save the CSV file
+        """
+        if self.loss_history is None:
+            self.logger.warning("No loss history available for saving")
+            return
+
+        try:
+            import pandas as pd
+        except ImportError:
+            self.logger.warning("pandas not available, skipping CSV export")
+            return
+
+        # Create DataFrame from loss history
+        max_length = max(len(losses) for losses in self.loss_history.values())
+        epochs = range(1, max_length + 1)
+
+        data = {'epoch': epochs}
+        for loss_type, losses in self.loss_history.items():
+            data[loss_type] = losses + [np.nan] * (max_length - len(losses))  # Pad with NaN if needed
+
+        df = pd.DataFrame(data)
+        df.to_csv(save_path, index=False)
+        self.logger.info(f"Loss data saved to: {save_path}")
+
+    def visualize_all(self) -> None:
+        """
+        Generate all visualizations: density snapshot, training losses, and save data.
+        """
+        # Get output directories from config
+        config_path = os.path.join(os.path.dirname(os.path.dirname(__file__)), 'config.json')
+        with open(config_path, 'r') as f:
+            config = json.load(f)
+
+        output_config = config.get('output', {})
+        plot_dir = output_config.get('plot_dir', 'plots')
+        results_dir = output_config.get('output_dir', 'results')
+
+        # Make directories absolute
+        if not os.path.isabs(plot_dir):
+            plot_dir = os.path.join(os.path.dirname(config_path), plot_dir)
+        if not os.path.isabs(results_dir):
+            results_dir = os.path.join(os.path.dirname(config_path), results_dir)
+
+        os.makedirs(plot_dir, exist_ok=True)
+        os.makedirs(results_dir, exist_ok=True)
+
+        # Generate all visualizations
+        self.plot_density_snapshot()
+
+        if self.loss_history is not None:
+            self.plot_loss_comparison(
+                save_path=os.path.join(plot_dir, 'training_losses.png'),
+                show_plot=False
+            )
+            self.save_loss_data(os.path.join(results_dir, 'loss_history.csv'))
+
+        self.save_results()
+        self.logger.info("All visualizations completed")
 

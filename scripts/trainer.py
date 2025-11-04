@@ -112,6 +112,15 @@ class Trainer_FNO:
         self.constants = constants
         self.wandb_log = wandb_log
 
+        # Loss history tracking
+        self.loss_history = {
+            'total': [],
+            'physics': [],
+            'ic': [],
+            'bc_left': [],
+            'bc_right': []
+        }
+
         # Setup logging
         self.logger = logging.getLogger(__name__)
 
@@ -360,6 +369,13 @@ class Trainer_FNO:
                 self.loss_weights['bc_left'] * loss_bc_left +
                 self.loss_weights['bc_right'] * loss_bc_right
             )
+
+            # Store loss history
+            self.loss_history['total'].append(total_loss.item())
+            self.loss_history['physics'].append(loss_physics.item())
+            self.loss_history['ic'].append(loss_ic.item())
+            self.loss_history['bc_left'].append(loss_bc_left.item())
+            self.loss_history['bc_right'].append(loss_bc_right.item())
 
             # Backward pass and optimization
             total_loss.backward()
