@@ -23,7 +23,7 @@ def rho_l_initial(x: torch.Tensor) -> torch.Tensor:
     torch.Tensor
         Initial density values for leader species (Gaussian bump)
     """
-    return torch.exp(-100 * (x - 0.5)**2)  # Gaussian bump centered at x=0.5
+    return torch.exp(-100 * (x - 0.5) ** 2)  # Gaussian bump centered at x=0.5
 
 
 def rho_f_initial(x: torch.Tensor) -> torch.Tensor:
@@ -40,14 +40,11 @@ def rho_f_initial(x: torch.Tensor) -> torch.Tensor:
     torch.Tensor
         Initial density values for follower species (Gaussian bump)
     """
-    return torch.exp(-100 * (x - 0.3)**2)  # Gaussian bump centered at x=0.3
+    return torch.exp(-100 * (x - 0.3) ** 2)  # Gaussian bump centered at x=0.3
 
 
 def generate_IC_torch(
-    x: torch.Tensor,
-    height: float = 0.1,
-    width: float = 0.01,
-    center: float = 0.1
+    x: torch.Tensor, height: float = 0.1, width: float = 0.01, center: float = 0.1
 ) -> torch.Tensor:
     """
     Generate initial condition using hyperbolic tangent function.
@@ -72,9 +69,7 @@ def generate_IC_torch(
 
 
 def coord_loader(
-    count: int,
-    device: torch.device,
-    type: str = 'collocation'
+    count: int, device: torch.device, type: str = "collocation"
 ) -> Tuple[torch.Tensor, ...]:
     """
     Generate coordinate data for different types of training points.
@@ -93,7 +88,7 @@ def coord_loader(
     Tuple[torch.Tensor, ...]
         Generated coordinate tensors depending on type
     """
-    if type == 'collocation':
+    if type == "collocation":
         # Collocation points (interior of space-time domain)
         N_f = count
         x_f = torch.rand((N_f, 1), requires_grad=True).to(device)
@@ -101,7 +96,7 @@ def coord_loader(
         coords = torch.cat((x_f, t_f), dim=1)
         return coords
 
-    elif type == 'ic':
+    elif type == "ic":
         # Initial condition points (at t = 0)
         N_ic = count
         x_ic = torch.linspace(0, 1, N_ic).reshape(-1, 1).to(device)
@@ -112,12 +107,16 @@ def coord_loader(
         ic_densities = torch.cat((rho_l_ic_true, rho_f_ic_true), dim=1)
         return ic_coords, ic_densities
 
-    elif type == 'bc':
+    elif type == "bc":
         # Boundary condition points
         N_bc = count
         t_bc = torch.linspace(0, 1, N_bc, requires_grad=True).reshape(-1, 1).to(device)
-        x_right = torch.ones_like(t_bc, requires_grad=True).to(device)   # x = 1 (Dirichlet)
-        x_left = torch.zeros_like(t_bc, requires_grad=True).to(device)   # x = 0 (Neumann)
+        x_right = torch.ones_like(t_bc, requires_grad=True).to(
+            device
+        )  # x = 1 (Dirichlet)
+        x_left = torch.zeros_like(t_bc, requires_grad=True).to(
+            device
+        )  # x = 0 (Neumann)
         right_bc_coords = torch.cat((x_right, t_bc), dim=1)
         left_bc_coords = torch.cat((x_left, t_bc), dim=1)
         return right_bc_coords, left_bc_coords
@@ -130,7 +129,7 @@ def fno_data_loader(
     batch_size: int = 4,
     n_spatial_points: int = 64,
     n_time_steps: int = 32,
-    device: torch.device = torch.device('cpu')
+    device: torch.device = torch.device("cpu"),
 ) -> Tuple[torch.Tensor, torch.Tensor, torch.Tensor, torch.Tensor]:
     """
     Generate data for Fourier Neural Operator training.
@@ -160,7 +159,7 @@ def fno_data_loader(
     # Create spatial and temporal coordinate grids
     x_coords = torch.linspace(0, 1, n_spatial_points)
     t_coords = torch.linspace(0, 1, n_time_steps)
-    grid_x_base, grid_t_base = torch.meshgrid(x_coords, t_coords, indexing='ij')
+    grid_x_base, grid_t_base = torch.meshgrid(x_coords, t_coords, indexing="ij")
 
     # Expand to batch dimension
     grid_x = grid_x_base.unsqueeze(0).repeat(batch_size, 1, 1).to(device)
@@ -169,10 +168,18 @@ def fno_data_loader(
     grid_t.requires_grad_(True)
 
     # Generate initial conditions for both species
-    initial_a = (generate_IC_torch(x_coords, height=0.1, width=0.01, center=0.1)
-                .unsqueeze(0).repeat(batch_size, 1).to(device))  # Leader initial condition
-    initial_b = (generate_IC_torch(x_coords, height=0.4, width=0.01, center=0.1)
-                .unsqueeze(0).repeat(batch_size, 1).to(device))  # Follower initial condition
+    initial_a = (
+        generate_IC_torch(x_coords, height=0.1, width=0.01, center=0.1)
+        .unsqueeze(0)
+        .repeat(batch_size, 1)
+        .to(device)
+    )  # Leader initial condition
+    initial_b = (
+        generate_IC_torch(x_coords, height=0.4, width=0.01, center=0.1)
+        .unsqueeze(0)
+        .repeat(batch_size, 1)
+        .to(device)
+    )  # Follower initial condition
 
     # Stack initial conditions for loss computation
     true_initial_conditions = torch.stack([initial_a, initial_b], dim=1).to(device)
@@ -183,8 +190,7 @@ def fno_data_loader(
 
     # Create complete input tensor: [x_grid, t_grid, initial_a, initial_b]
     input_tensor = torch.stack(
-        [grid_x, grid_t, initial_a_expanded, initial_b_expanded],
-        dim=1
+        [grid_x, grid_t, initial_a_expanded, initial_b_expanded], dim=1
     ).to(device)
 
     return grid_x, grid_t, input_tensor, true_initial_conditions

@@ -32,13 +32,14 @@ class MLP(nn.Module):
     activation : nn.Module, optional
         Activation function to use, default is Tanh
     """
+
     def __init__(
         self,
         input_dim: int,
         output_dim: int,
         hidden_dim: int,
         num_layers: int,
-        activation: nn.Module = nn.Tanh()
+        activation: nn.Module = nn.Tanh(),
     ) -> None:
         super(MLP, self).__init__()
         self.input_dim = input_dim
@@ -75,7 +76,7 @@ class PINN(nn.Module):
         coord_encoder_hidden: int = 128,
         coord_encoder_layers: int = 4,
         manifold_net_hidden: int = 128,
-        manifold_net_layers: int = 4
+        manifold_net_layers: int = 4,
     ) -> None:
         """
         Initialize the PINN model.
@@ -109,7 +110,7 @@ class PINN(nn.Module):
             coord_encoder_hidden,
             coord_encoder_hidden,
             coord_encoder_layers,
-            activation
+            activation,
         )
 
         # Manifold Networks for Leader and Follower species
@@ -118,14 +119,14 @@ class PINN(nn.Module):
             output_dim,
             manifold_net_hidden,
             manifold_net_layers,
-            activation
+            activation,
         )
         self.manifold_net_F = MLP(
             coord_encoder_hidden,
             output_dim,
             manifold_net_hidden,
             manifold_net_layers,
-            activation
+            activation,
         )
 
     def forward(self, coords: torch.Tensor) -> torch.Tensor:
@@ -188,7 +189,7 @@ class CoupledSpeciesTFNO(nn.Module):
             hidden_channels=width,
             in_channels=self.in_channels,
             out_channels=self.out_channels,
-            n_layers=n_layers
+            n_layers=n_layers,
         )
 
     def forward(self, x: torch.Tensor) -> torch.Tensor:
@@ -206,7 +207,7 @@ class CoupledSpeciesTFNO(nn.Module):
         torch.Tensor
             Predicted densities of shape (batch_size, out_channels, num_x_points, num_t_points)
         """
-        x_coord = x[:, 0:1, :, :]      # Spatial grid
+        x_coord = x[:, 0:1, :, :]  # Spatial grid
         p_l_initial = x[:, 2:3, :, :]  # Leader initial condition
         p_f_initial = x[:, 3:4, :, :]  # Follower initial condition
 
