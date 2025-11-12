@@ -1,36 +1,32 @@
 # Physics-Informed Neural Networks for Collective Cancer Invasion
 
-[![Python Version](https://img.shields.io/badge/python-3.12+-blue.svg)](https://www.python.org/downloads/)
-[![PyTorch](https://img.shields.io/badge/PyTorch-2.9+-red.svg)](https://pytorch.org/)
-[![License](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
-
 A comprehensive implementation of physics-informed neural networks (PINNs) and Fourier neural operators (FNOs) for modeling collective cancer invasion dynamics. This project solves coupled nonlinear partial differential equations describing the spatiotemporal evolution of leader and follower cancer cell populations using advanced machine learning techniques.
 
-## 🎯 Overview
+## Overview
 
 This application models the complex dynamics of cancer cell invasion through a coupled system of reaction-diffusion equations. The mathematical model captures the nonlinear interactions between leader cells (invasive front) and follower cells (main tumor mass), solved using physics-informed learning approaches that enforce PDE constraints during neural network training.
 
 ### Key Features
 
-- **🔬 Physics-Informed Learning**: Direct enforcement of PDE constraints in the loss function
-- **🌊 Fourier Neural Operators**: Spectral-based architecture for efficient PDE solving
-- **📊 Multi-Format Results**: Saves predictions in NumPy, CSV, and JSON formats
-- **🎨 Advanced Visualization**: High-quality plots and time-evolution snapshots
-- **⚙️ Configurable Architecture**: JSON-based configuration for all parameters
-- **🏗️ Modular Design**: Clean separation of concerns with object-oriented architecture
+- **Physics-Informed Learning**: Direct enforcement of PDE constraints in the loss function
+- **Fourier Neural Operators**: Spectral-based architecture for efficient PDE solving
+- **Multi-Format Results**: Saves predictions in NumPy, CSV, and JSON formats
+- **Advanced Visualization**: High-quality plots and time-evolution snapshots
+- **Configurable Architecture**: JSON-based configuration for all parameters
+- **Modular Design**: Clean separation of concerns with object-oriented architecture
 
-## 📋 Table of Contents
+## Table of Contents
 
-- [Mathematical Model](#-mathematical-model)
-- [Installation](#-installation)
-- [Usage](#-usage)
-- [Project Structure](#-project-structure)
-- [Configuration](#-configuration)
-- [Architecture](#-architecture)
-- [Contributing](#-contributing)
-- [License](#-license)
+- [Mathematical Model](#mathematical-model)
+- [Installation](#installation)
+- [Usage](#usage)
+- [Project Structure](#project-structure)
+- [Configuration](#configuration)
+- [Architecture](#architecture)
+- [Contributing](#contributing)
+- [License](#license)
 
-## 🔬 Mathematical Model
+## Mathematical Model
 
 The model describes the spatiotemporal evolution of leader ($\rho_l$) and follower ($\rho_f$) cancer cell densities through coupled reaction-diffusion equations:
 
@@ -51,7 +47,7 @@ The model describes the spatiotemporal evolution of leader ($\rho_l$) and follow
 - **K_l, K_f**: Growth rates
 - **X**: Coupling parameter
 
-## 🚀 Installation
+## Installation
 
 ### Prerequisites
 - Python 3.12 or higher
@@ -80,7 +76,7 @@ pip install torch torchvision torchaudio --index-url https://download.pytorch.or
 pip install -r requirements.txt
 ```
 
-## 💻 Usage
+## Usage
 
 ### Basic Execution
 ```bash
@@ -119,7 +115,7 @@ plots/
 └── density_snapshot.png       # Final state visualization
 ```
 
-## 📁 Project Structure
+## Project Structure
 
 ```
 pinn-cancer-invasion/
@@ -139,7 +135,7 @@ pinn-cancer-invasion/
 └── plots/                     # Generated visualizations (auto-created)
 ```
 
-## ⚙️ Configuration
+## Configuration
 
 The `config.json` file controls all aspects of the simulation:
 
@@ -187,7 +183,7 @@ The `config.json` file controls all aspects of the simulation:
 }
 ```
 
-## 🏗️ Architecture
+## Architecture
 
 ### Design Principles
 - **Modular Structure**: Clear separation of concerns
@@ -217,7 +213,7 @@ The `config.json` file controls all aspects of the simulation:
 - Initial and boundary condition enforcement
 - PyTorch tensor preparation
 
-## 🤝 Contributing
+## Contributing
 
 1. Fork the repository
 2. Create a feature branch (`git checkout -b feature/amazing-feature`)
@@ -232,17 +228,17 @@ The `config.json` file controls all aspects of the simulation:
 - Write unit tests for new features
 - Update documentation for API changes
 
-## 📄 License
+## License
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
-## 🙏 Acknowledgments
+## Acknowledgments
 
 - Based on research in physics-informed neural networks
 - Implements methods from the Neural Operator literature
 - Inspired by collective behavior in biological systems
 
-## 📚 References
+## References
 
 1. Raissi, M., Perdikaris, P., & Karniadakis, G. E. (2019). Physics-informed neural networks: A deep learning framework for solving forward and inverse problems involving nonlinear partial differential equations. Journal of Computational Physics.
 
