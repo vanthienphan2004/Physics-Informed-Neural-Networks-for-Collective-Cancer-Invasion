@@ -31,4 +31,8 @@ zencfg>=0.6.0
 configmypy>=0.2.0
 
 # Optional: Weights & Biases for experiment tracking
-wandb>=0.22.0
+# wandb>=0.22.0
+
+# Development tools
+black>=24.0.0
+pre-commit>=3.0.0

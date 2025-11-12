@@ -2,6 +2,10 @@
 
 A comprehensive implementation of physics-informed neural networks (PINNs) and Fourier neural operators (FNOs) for modeling collective cancer invasion dynamics. This project solves coupled nonlinear partial differential equations describing the spatiotemporal evolution of leader and follower cancer cell populations using advanced machine learning techniques.
 
+**Version**: 1.0.0  
+**Last Updated**: November 12, 2025  
+**License**: MIT
+
 ## Overview
 
 This application models the complex dynamics of cancer cell invasion through a coupled system of reaction-diffusion equations. The mathematical model captures the nonlinear interactions between leader cells (invasive front) and follower cells (main tumor mass), solved using physics-informed learning approaches that enforce PDE constraints during neural network training.
@@ -75,6 +79,17 @@ If you don't have a CUDA-compatible GPU:
 pip install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cpu
 pip install -r requirements.txt
 ```
+
+### Development Setup
+
+For development, install pre-commit hooks to ensure code quality:
+
+```bash
+pip install pre-commit
+pre-commit install
+```
+
+This will run Black code formatting on commits.
 
 ## Usage
 
